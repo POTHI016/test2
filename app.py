@@ -33,8 +33,6 @@ row += "<td>"+r.product+"</td>"
 row += "<td>"+r.product_code+"</td>"
 row += "<td>"+r.notes+"</td>"
 row += "<td>"+r.scale_id+"</td>"
-row += "<td>"+r.serial+"</td>"
-row += "<td>"+r.model+"</td>"
 row += "<td>"+r.txn+"</td>"
 
 row += "</tr>"
@@ -48,10 +46,26 @@ setInterval(updateTable,1000)
 </script>
 
 <style>
-body{font-family:Arial;background:#f5f5f5;text-align:center}
-table{border-collapse:collapse;width:95%;margin:auto;background:white}
-th,td{border:1px solid #ccc;padding:8px;font-size:14px}
-th{background:#444;color:white}
+body{
+font-family:Arial;
+background:#f5f5f5;
+text-align:center
+}
+table{
+border-collapse:collapse;
+width:95%;
+margin:auto;
+background:white
+}
+th,td{
+border:1px solid #ccc;
+padding:8px;
+font-size:14px
+}
+th{
+background:#444;
+color:white
+}
 </style>
 
 </head>
@@ -71,11 +85,10 @@ th{background:#444;color:white}
 <th>Product Code</th>
 <th>Notes</th>
 <th>Scale ID</th>
-<th>Scale Serial Number</th>
-<th>Scale Model Number</th>
 <th>Txn Number</th>
 </tr>
 </thead>
+
 <tbody id="tablebody"></tbody>
 </table>
 
@@ -95,13 +108,19 @@ def data():
 @app.route("/receive", methods=["POST"])
 def receive():
     data = request.json
+
+    # Optional safety: remove unwanted keys if sent
+    data.pop("serial", None)
+    data.pop("model", None)
+
     data_list.insert(0, data)
+
     if len(data_list) > 100:
         data_list.pop()
+
     return jsonify({"status": "received"})
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5003))
     app.run(host="0.0.0.0", port=port)
-
